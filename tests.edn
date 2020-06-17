@@ -1,3 +1,5 @@
 #kaocha/v1
 {:tests [{:id         :examples
-          :test-paths ["test/examples"]}]}
+          :test-paths ["test/examples"]}
+         {:id   :properties
+          :type :kaocha.type/spec.test.check}]}

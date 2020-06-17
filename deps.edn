@@ -1,5 +1,10 @@
 {:deps
  {org.clojure/clojure   {:mvn/version "1.10.2-alpha1"}
+ 
+  anomalies             {:git/url "https://github.com/cognitect-labs/anomalies"
+                         :sha "2decbbb3ffd8e919c67d29f39ec6d920575f65c3"
+                         :tag "0.1.12"
+                         :deps/manifest :deps}
 
   ; See https://github.com/l3nz/cli-matic/pull/114 for the reason behind this (hopefully temporary)
   ; fork.
@@ -7,20 +12,48 @@
                          :sha "28c5148c32e6eb841c452dc9a5f06ee33d5c66c9"}
 
   clj-commons/clj-yaml  {:mvn/version "0.7.0"}
+
   medley                {:git/url "https://github.com/weavejester/medley"
                          :sha "6c79c4cce52b276daa3c2b6eaea78f96904bca56"
                          :tag "1.3.0"}
-  selmer                {:mvn/version "1.12.23"}}
 
+  ; For rendering templates
+  selmer                {:mvn/version "1.12.23"} ; https://github.com/yogthos/Selmer
+
+  ; For converting words between singular and plural and vice-versa
+  inflections {:git/url "https://github.com/r0man/inflections-clj"
+               :sha "70d390f0e60a620c6ecc6090239006de922bd159"
+               :tag "0.13.2"
+               :deps/manifest :deps}
+
+  ; Required by inflections, which doesn’t have an actual deps.edn
+  noencore    {:git/url "https://github.com/r0man/noencore"
+               :sha "b17defdaabdd301817e196af4616ecb9bfe349cb"
+               :tag "0.3.6"
+               :deps/manifest :deps}
+
+  ; Required by noencore, which doesn’t have an actual deps.edn. Also used by Selmer, so technically
+  ; we should be careful about potential conflicts here. In practice, though, this is an old,
+  ; mature, and extremely stable dependency, so I’m not too worried about it.
+  commons-codec/commons-codec {:mvn/version "1.11"}}
+ 
  :aliases
  {:dev        {:jvm-opts ["-XX:-OmitStackTraceInFastThrow"
                           "--illegal-access=deny"
-                          "-Dclojure.server.repl={:port,0,:accept,clojure.core.server/repl}"]}
+                          "-Dclojure.server.repl={:port,0,:accept,clojure.core.server/repl}"]
+               :main-opts ["-e" "(.getLocalPort,(get-in,@#'clojure.core.server/servers,[\"repl\",:socket]))"
+                           "-r"]}
   
-  :test       {:extra-paths ["test"]
-               :extra-deps  {kaocha {:git/url "https://github.com/lambdaisland/kaocha"
-                                     :sha "c97184a30a604da92a86d4207ed7e26b67881e5c"
-                                     :tag "v1.0.629"}}}
+  :test       {:extra-paths ["test" "test/examples"]
+               :extra-deps  {kaocha      {:git/url "https://github.com/lambdaisland/kaocha"
+                                          :sha "96518cf42d722d668d363942070a69f74d5242cd"
+                                          :tag "v1.0.632"}
+                             test.check  {:git/url "https://github.com/clojure/test.check"
+                                          :sha "cdc0b1d5bc7ef450a25f6c605657d2a6f40a7dd4"
+                                          :tag "test.check-1.0.0"}
+                             expound     {:git/url "https://github.com/bhb/expound"
+                                          :sha "976fbe0840ce7a2e22bfc53022612e7af8162be6"
+                                          :tag "v0.8.5"}}}
   
   :main       {:main-opts ["-m" "dad.cli"]
                :jvm-opts  ["-Dapple.awt.UIElement=true"
